@@ -1,4 +1,5 @@
 main :-
+	%retractall используется для удаления уже заданного вопроса
     retractall(asked(_,_)),
     fault(Problem), !, nl,
     write('Это растение '), write(Problem), write(.), nl.
