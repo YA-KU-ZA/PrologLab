@@ -66,6 +66,7 @@ children(X):- parent(X,Y), print(Y), nl, fail.
 % матерью Y.Построить предикат, mother(+X), который выводит маму X.
 mother(X,Y):- woman(X), parent(X,Y).
 mother(X):- mother(Y,X), print(Y), nl, fail.
+father(X,Y):- man(X),parent(X,Y).
 % Построить предикат brother(+X, ?Y), который проверяет, являетс¤ ли X
 % братом Y. Построить предикат brothers(+X), который выводит всех
 % братьев X.
@@ -93,8 +94,8 @@ wife(X):- wife(Y,X), print(Y), nl, fail.
 % Построить предикат grand_so(+X, +Y), который проверяет, является ли X
 % внуком Y. Построить предикат grand_sons(+X), который выводит всех
 % внуков X.
-grand_so(X,Y):- man(X), mother(K,X), parent(Y,K).
-grand_sons(X):- grand_so(Y,X), X\=Y, print(Y), nl, fail.
+grand_so(X,Y):- father(K,X),parent(Y,K), man(K).
+grand_sons(X):- grand_so(Y,X), X\=Y, man(Y), print(Y), nl, fail.
 
 % Построить предикат grand_ma_and_son(+X,+Y), который проверяет,
 % являются ли X и Y бабушкой и внуком или внуком и бабушкой.
