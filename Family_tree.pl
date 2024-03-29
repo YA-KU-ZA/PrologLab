@@ -99,7 +99,7 @@ grand_sons(X):- grand_so(Y,X), X\=Y, man(Y), print(Y), nl, fail.
  
 % Построить предикат grand_ma_and_son(+X,+Y), который проверяет, 
 % являются ли X и Y бабушкой и внуком или внуком и бабушкой. 
-grand_ma_and_son(X,Y):- mother(K,X), parent(Y,K); parent(X,K), mother(K,Y), !. 
+grand_ma_and_son(X,Y):- mother(K,X), parent(Y,K), man(X); parent(X,K), mother(K,Y),man (Y) !. 
  
 %Построить предикат, который проверяет, являетс¤ ли X дядей Y. 
 %Построить предикат, который выводит всех дядей X. 
