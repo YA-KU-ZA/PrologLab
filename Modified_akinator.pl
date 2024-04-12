@@ -136,3 +136,4 @@ query(Prompt) :-
 	assert(asked(Prompt, Reply))
     ),
     Reply = y.
+    
