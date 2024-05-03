@@ -35,11 +35,19 @@ found_digits_up(N, Count):-
     ( N1 > 3, N1 mod 2 =:= 1 -> N2 is N // 10, found_digits_up(N2, Count1), Count is Count1 + 1;
 	N2 is N // 10, found_digits_up(N2, Count)).
 
-%НОД двух чисел (+Num1,+Num2,-Del)
-nod_digits(Num1, Num2, Del):-
-    (   Num1 =< Num2 -> nod_digits_help(Num1, Num2, Del);
-    nod_digits_help(Num2, Num1, Del)).
-
-nod_digits_help(Num1, Num2, Del):-
-    (   Num2 =:= 0 -> Del = Num1;
-    NewNum2 is Num1 mod Num2, nod_digits_help(Num2, NewNum2, Del)).
+% Предикат для вычисления НОД рекурсией вверх nod_up(+X,+Y,-NOD).
+nod_up(0, Y, Y) :- Y > 0.
+nod_up(X, 0, X) :- X > 0.
+nod_up(X, Y, NOD) :-
+    X > Y, X1 is X mod Y,
+    nod_up(X1, Y, NOD).
+nod_up(X, Y, NOD) :-
+    Y > X, Y1 is Y mod X,
+    nod_up(X, Y1, NOD).
+	
+% Предикат для вычисления НОД рекурсией вниз nod_down(+X,+Y,-NOD).
+nod_down(X, 0, X) :- X > 0.
+nod_down(X, Y, NOD) :-
+    Y > 0,
+    Z is X mod Y,
+    nod_down(Y, Z, NOD).
