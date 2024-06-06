@@ -1,0 +1,47 @@
+Предикат для подсчёта количества простых чисел на отрезке:
+
+count_primes_in_range(A, B, Count) :-
+    findall(X, (between(A, B, X), is_prime(X)), Primes),
+    length(Primes, Count).
+
+is_prime(2).
+is_prime(X) :-
+    X > 2,
+    X mod 2 =\= 0,
+    \+ (between(3, X // 2, I), I mod 2 =\= 0, X mod I =:= 0).
+
+Предикат для нахождения наибольшего простого элемента в списке:
+
+max_prime(List, MaxPrime) :-
+    include(is_prime, List, Primes),
+    max_list(Primes, MaxPrime).
+Предикат razm для генерации размещений:
+razm_to_file(List, K, Filename) :-
+    open(Filename, write, Stream),
+    (   permutation(List, Perm),
+        length(Comb, K),
+        append(Comb, _, Perm),
+        writeln(Stream, Comb),
+        fail % Backtracking to find all combinations
+    ;   true % Success: close stream
+    ),
+    close(Stream).
+Предикат для проверки возрастающей последовательности:
+is_ascending([]).
+is_ascending([_]).
+is_ascending([X,Y|Tail]) :-
+    X < Y,
+    is_ascending([Y|Tail]).
+
+Предикат для вывода возрастающих последовательностей простых чисел:
+ascending_primes(List, A, B, K) :-
+    findall(Comb, (comb(K, List, Comb), all_primes_in_range(Comb, A, B), is_ascending(Comb)), Combs),
+    member(Comb, Combs),
+    writeln(Comb).
+
+all_primes_in_range(Comb, A, B) :-
+    exclude(is_prime, Comb, []),
+    Comb = [H|_],
+    last(Comb, L),
+    H >= A,
+    L =< B.

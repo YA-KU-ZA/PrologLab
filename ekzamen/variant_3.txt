@@ -1,0 +1,48 @@
+Предикат для нахождения максимальной цифры в числе:
+
+% Преобразуем число в список его цифр
+number_to_digits(Number, Digits) :-
+    number_codes(Number, Codes),
+    maplist(code_to_digit, Codes, Digits).
+
+code_to_digit(Code, Digit) :-
+    Digit is Code - 48.
+
+% Находим максимальную цифру в списке цифр
+max_digit(Number, Max) :-
+    number_to_digits(Number, Digits),
+    max_list(Digits, Max).
+
+% Встроенный предикат max_list уже существует в SWI-Prolog и находит максимальный элемент списка.
+Предикат для нахождения всех подмножеств данного множества:
+
+% Предикат subsets генерирует все подмножества списка
+subsets([], []).
+subsets([E|Tail], [E|NTail]) :-
+    subsets(Tail, NTail).
+subsets([_|Tail], NTail) :-
+    subsets(Tail, NTail).
+Предикат, который для списка чисел проверяет, что все максимальные цифры равны между собой:
+
+% Проверяем, что все максимальные цифры в списке чисел равны
+all_max_digits_equal([H|T]) :-
+    max_digit(H, MaxDigit),
+    all_max_digits_equal(T, MaxDigit).
+
+all_max_digits_equal([], _).
+all_max_digits_equal([H|T], MaxDigit) :-
+    max_digit(H, MaxDigit),
+    all_max_digits_equal(T, MaxDigit).
+Предикат для нахождения подмножества максимальной мощности из списка, у которого все максимальные элементы равны:
+
+% Находим подмножество максимальной мощности с одинаковыми максимальными цифрами
+max_power_subset_equal_max_digit(List, Subset) :-
+    findall(S, (subsets(List, S), all_max_digits_equal(S)), Subsets),
+    max_length_sublist(Subsets, Subset).
+
+% Находим самый длинный список в списке списков
+max_length_sublist(Sublists, MaxSublist) :-
+    maplist(length, Sublists, Lengths),
+    max_list(Lengths, MaxLength),
+    member(MaxSublist, Sublists),
+    length(MaxSublist, MaxLength).

@@ -1,0 +1,58 @@
+Предикат vz_prost(+X, +Y), проверяющий числа на взаимную простоту.
+% Проверка на взаимную простоту двух чисел
+vz_prost(X, Y) :- gcd(X, Y, 1).
+
+% gcd - наибольший общий делитель (используется встроенный предикат)
+gcd(X, 0, X) :- X > 0.
+gcd(X, Y, G) :- Y > 0, Z is X mod Y, gcd(Y, Z, G).
+
+Предикат max_list(+List, -Index), определяющий индекс элемента списка с максимальной суммой чисел, меньших элемента и взаимно-простых с ним.
+% Определение индекса с максимальной суммой взаимно простых чисел
+max_list(List, Index) :-
+    findall(Sum, (nth1(Idx, List, Elem), sum_coprimes(Elem, List, 0, Sum)), Sums),
+    max_list(Sums, MaxSum, 1, _, Index).
+
+% Подсчёт суммы взаимно простых чисел меньше данного
+sum_coprimes(_, [], Acc, Acc).
+sum_coprimes(Elem, [H|T], Acc, Sum) :-
+    (H < Elem, vz_prost(Elem, H) -> NewAcc is Acc + H; NewAcc = Acc),
+    sum_coprimes(Elem, T, NewAcc, Sum).
+
+% Нахождение максимума в списке
+max_list([], CurrentMax, _, CurrentMaxIdx, CurrentMaxIdx).
+max_list([H|T], CurrentMax, CurrentIdx, _, MaxIdx) :-
+    NextIdx is CurrentIdx + 1,
+    (H > CurrentMax -> max_list(T, H, NextIdx, CurrentIdx, MaxIdx)
+    ; max_list(T, CurrentMax, NextIdx, CurrentMaxIdx, MaxIdx)).
+Предикат comb(+List, +K, -Sochet), записывающий в Sochet все возможные сочетания по K элементов.
+% Генерация всех сочетаний элементов списка по K
+comb(List, K, Combs) :- findall(Comb, comb(List, K, Comb), Combs).
+
+% Вспомогательный предикат для создания одного сочетания
+comb(_, 0, []).
+comb([H|T], K, [H|Comb]) :- K > 0, K1 is K-1, comb(T, K1, Comb).
+comb([_|T], K, Comb) :- K > 0, comb(T, K, Comb).
+
+Используя предикат из предыдущих задач, построить предикат с одним обязательным аргументом – список, который выводит на экран все сочетания взаимно-простых пар чисел.
+% Вывод всех сочетаний взаимно-простых пар чисел
+print_coprime_pairs(List) :- comb(List, 2, Combs), print_coprime_combinations(Combs).
+
+% Вывод взаимно-простых сочетаний
+print_coprime_combinations([]).
+print_coprime_combinations([[X, Y]|T]) :-
+    (vz_prost(X, Y) -> writeln([X, Y]); true),
+    print_coprime_combinations(T).
+
+Предикат, который выводит на экран все слова длины 6 на алфавите [a, b, c, d, e, f], в которых три буквы a, две буквы b.
+% Генерация слов с заданными условиями
+generate_words :-
+    Alphabet = [a, b, c, d, e, f],
+    comb(Alphabet, 6, Word),
+    count(a, Word, 3),
+    count(b, Word, 2),
+    writeln(Word).
+
+% Подсчёт количества вхождений элемента в список
+count(_, [], 0).
+count(Elem, [Elem|T], Count) :- count(Elem, T, TempCount), Count is TempCount + 1.
+count(Elem, [H|T], Count) :- Elem \= H, count(Elem, T, Count).

@@ -1,0 +1,27 @@
+Предикат для проверки числа на совершенность:
+is_perfect(Number) :-
+    findall(Divisor, (between(1, Number // 2, Divisor), Number mod Divisor =:= 0), Divisors),
+    sum_list(Divisors, Sum),
+    Sum =:= Number.
+Предикат для создания списка совершенных чисел из исходного списка:
+perfect_numbers(List, Perfects) :-
+    include(is_perfect, List, Perfects).
+Предикат для нахождения всех перестановок списка:
+prolog
+Copy code
+pr(List, Permutation) :-
+    permutation(List, Permutation).
+Предикат для нахождения всех сочетаний по три элемента:
+
+pr(List, Sochet) :-
+    combination(3, List, Sochet).
+
+combination(0, _, []).
+combination(N, [X|T], [X|Comb]) :- N > 0, N1 is N - 1, combination(N1, T, Comb).
+combination(N, [_|T], Comb) :- N > 0, combination(N, T, Comb).
+Предикат для вывода всех слов длины 6 из алфавита [a,b,c,d], где есть три буквы a и остальные различны:
+word_6([a,a,a|Tail]) :-
+    permutation([b,c,d], Tail),
+    writeln([a,a,a|Tail]).
+generate_words_6 :-
+    findall(_, word_6(_), _).

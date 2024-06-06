@@ -1,0 +1,43 @@
+Проверка числа на простоту:
+is_prime(2).
+is_prime(N) :-
+    N > 2,
+    N mod 2 =\= 0,
+    \+ has_divisor(N, 3).
+
+has_divisor(N, L) :-
+    N mod L =:= 0.
+has_divisor(N, L) :-
+    L * L < N,
+    L2 is L + 2,
+    has_divisor(N, L2).
+Сочетания по K элементов:
+comb(_, 0, []).
+comb([H|T], K, [H|R]) :-
+    K > 0,
+    K1 is K - 1,
+    comb(T, K1, R).
+comb([_|T], K, R) :-
+    K > 0,
+    comb(T, K, R).
+Проверка списка на простоту всех элементов:
+all_primes([]).
+all_primes([H|T]) :-
+    is_prime(H),
+    all_primes(T).
+Список всех уникальных делителей:
+
+unique_divisors(List, Divisors) :-
+    findall(D, (member(X, List), divisor(X, D)), Ds),
+    sort(Ds, Divisors).
+
+divisor(N, D) :-
+    between(2, N, D),
+    N mod D =:= 0.
+Сочетания из уникальных простых делителей:
+
+prime_combinations(List, K) :-
+    unique_divisors(List, Divisors),
+    findall(Comb, (comb(Divisors, K, Comb), all_primes(Comb)), Combinations),
+    member(Combination, Combinations),
+    writeln(Combination).

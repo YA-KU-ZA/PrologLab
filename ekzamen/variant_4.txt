@@ -1,0 +1,48 @@
+Предикат для проверки числа на простоту:
+
+% Является ли число простым
+is_prime(2).
+is_prime(3).
+is_prime(P) :- integer(P), P > 3, P mod 2 =\= 0, \+ has_factor(P,3).
+
+% Проверка на наличие факторов до квадратного корня из P
+has_factor(N,L) :- N mod L =:= 0.
+has_factor(N,L) :- L * L < N, L2 is L + 2, has_factor(N,L2).
+Предикат для генерации комбинаций с повторением и записи их в файл:
+
+% Генерация всех комбинаций с повторением
+comb_with_replacement(_, 0, []).
+comb_with_replacement(L, N, [H|T]) :- member(H, L), N1 is N - 1, comb_with_replacement(L, N1, T).
+
+% Запись комбинаций в файл
+write_combinations_to_file(List, N, Filename) :-
+    open(Filename, write, Stream),
+    (   comb_with_replacement(List, N, Comb),
+        writeln(Stream, Comb),
+        fail % Продолжаем генерацию комбинаций
+    ;   close(Stream) % Закрываем файл после окончания генерации
+    ).
+Предикат для проверки, все ли числа в списке простые:
+
+% Проверка, что все элементы списка являются простыми числами
+all_primes([]).
+all_primes([H|T]) :- is_prime(H), all_primes(T).
+Предикат для нахождения общих делителей всех чисел в списке:
+prolog
+Copy code
+% Нахождение наибольшего общего делителя двух чисел
+gcd(A, 0, A) :- !.
+gcd(A, B, D) :- B > 0, R is A mod B, gcd(B, R, D).
+
+% Нахождение НОД для списка чисел
+gcd_list([H|T], D) :- gcd_list(T, H, D).
+
+gcd_list([], D, D).
+gcd_list([H|T], Acc, D) :-
+    gcd(H, Acc, Gcd),
+    gcd_list(T, Gcd, D).
+
+% Нахождение общих делителей списка чисел
+common_divisors(List, Divisors) :-
+    gcd_list(List, Gcd),
+    findall(D, (between(1, Gcd, D), Gcd mod D =:= 0), Divisors).

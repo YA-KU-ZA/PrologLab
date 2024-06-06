@@ -1,0 +1,47 @@
+Предикат fib(N, A) для работы с числами Фибоначчи:
+fib(0, 0).
+fib(1, 1).
+fib(N, A) :-
+    N > 1,
+    N1 is N - 1, fib(N1, A1),
+    N2 is N - 2, fib(N2, A2),
+    A is A1 + A2.
+Предикат fib_list(List, Count) для подсчёта пар "номер-число Фибоначчи":
+fib_list(List, Count) :-
+    findall(1, (member((N, F), List), fib(N, F)), Matches),
+    length(Matches, Count).
+Предикат razm(List, K, Razm) для генерации всех размещений по K элементов без повторений:
+razm(List, K, Razm) :-
+    length(Razm, K),
+    razm(List, Razm).
+
+razm(_, []).
+razm(List, [H|T]) :-
+    select(H, List, Rest),
+    razm(Rest, T).
+Предикат для вывода размещений, содержащих только числа Фибоначчи:
+print_fib_placements(List, K) :-
+    findall(Razm, (razm(List, K, Razm), all_fib(Razm)), FibPlacements),
+    print_placements(FibPlacements).
+
+all_fib([]).
+all_fib([H|T]) :-
+    fib(_, H),
+    all_fib(T).
+
+print_placements([]).
+print_placements([H|T]) :-
+    writeln(H),
+    print_placements(T).
+Предикат для генерации слов из заданных букв:
+generate_words :-
+    Alphabet1 = [a, b, c, d, e],
+    Alphabet2 = [v, w, x, y, z],
+    findall(Word, gen_word(Alphabet1, Alphabet2, Word), Words),
+    maplist(writeln, Words).
+
+gen_word(Alphabet1, Alphabet2, Word) :-
+    razm(Alphabet1, 3, Part1),
+    length(Part2, 3),
+    maplist(member(Alphabet2), Part2),
+    append(Part1, Part2, Word).

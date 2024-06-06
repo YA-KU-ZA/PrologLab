@@ -1,0 +1,64 @@
+Предикат, который находит сумму цифр числа:
+
+sum_of_digits(Number, Sum) :-
+    number_codes(Number, Digits),
+    maplist(code_to_digit, Digits, DigitList),
+    sum_list(DigitList, Sum).
+
+code_to_digit(Code, Digit) :-
+    Digit is Code - 48.
+Предикат, который находит минимальный элемент списка:
+
+min_list_element([Min], Min).
+min_list_element([Head|Tail], Min) :-
+    min_list_element(Tail, TailMin),
+    Min is min(Head, TailMin).
+Предикат comb/3, записывающий все возможные сочетания с повторениями по K элементов в файл:
+
+sochet(List, K, Filename) :-
+    open(Filename, write, Stream),
+    findall(Comb, (combination_with_replacement(List, K, Comb)), Combinations),
+    maplist(writeln(Stream), Combinations),
+    close(Stream).
+
+combination_with_replacement(_, 0, []).
+combination_with_replacement(L, N, [X|Xs]) :-
+    member(X, L),
+    N1 is N - 1,
+    combination_with_replacement(L, N1, Xs).
+Предикат, который для заданного списка строит новый, состоящий из пар элементов – первое число сумма цифр, второе – количество элементов с такой суммой цифр:
+sum_count_pairs(List, Pairs) :-
+    maplist(sum_of_digits, List, Sums),
+    set_pairs(Sums, Pairs).
+
+set_pairs(Sums, Pairs) :-
+    list_to_set(Sums, UniqueSums),
+    findall(Sum-Count, (member(Sum, UniqueSums), include(==(Sum), Sums, SumList), length(SumList, Count)), Pairs).
+Предикат, который для заданного списка находит самую частую сумму цифр:
+most_frequent_sum(List, FrequentSum) :-
+    maplist(sum_of_digits, List, Sums),
+    msort(Sums, SortedSums),
+    encode(SortedSums, Encoded),
+    max_occurrence(Encoded, FrequentSum-Count).
+
+encode([], []).
+encode([X|Xs], [[X|Xs1]|Ys]) :-
+    collect_same(Xs, X, Xs1, Rest),
+    encode(Rest, Ys).
+
+collect_same([X|Xs], X, [X|Ys], Rest) :-
+    collect_same(Xs, X, Ys, Rest).
+collect_same(Rest, Y, [], Rest) :-
+    Rest = []; Rest = [Z|_], Z \= Y.
+
+max_occurrence([F|Fs], Max) :-
+    max_occurrence(Fs, F, Max).
+
+max_occurrence([], Max, Max).
+max_occurrence([F|Fs], CurrentMax, Max) :-
+    (   length(F, LengthF),
+        CurrentMax = _-CountCurrentMax,
+        LengthF > CountCurrentMax
+    ->  max_occurrence(Fs, F-LengthF, Max)
+    ;   max_occurrence(Fs, CurrentMax, Max)
+    ).
